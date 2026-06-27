@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✈️ AI Travel Planner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .header p { font-size: 1.1rem; opacity: 0.95; }
+    .status-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: #f8f9fa;
+    }
+    .message {
+      display: flex;
+      gap: 1rem;
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message.user { justify-content: flex-end; }
+    .bubble {
+      max-width: 75%;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+    .message.user .bubble {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .message.assistant .bubble {
+      background: white;
+      border: 1px solid #e0e0e0;
+      color: #333;
+    }
+    .agent-tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      background: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-right: 6px;
+      margin-bottom: 8px;
+    }
+    .thinking { font-style: italic; color: #999; }
+    .input-area {
+      padding: 1.5rem;
+      border-top: 1px solid #e0e0e0;
+      background: white;
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    input::placeholder { color: #999; }
+    button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 1rem;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-message {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      padding: 1rem;
+      color: #721c24;
+    }
+    .suggestion-buttons { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+    .suggestion-btn {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      color: #333;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .suggestion-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✈️ AI Travel Planner</h1>
+      <p>Your personal multi-agent travel planning assistant</p>
+      <div class="status-bar">
+        <div class="badge">🟢 Online</div>
+        <div class="badge">🔍 Research</div>
+        <div class="badge">📋 Planning</div>
+        <div class="badge">🧠 Memory</div>
+        <div class="badge">⚡ Multi-Agent</div>
+      </div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="input" placeholder="Describe your dream trip..." />
+      <button id="send" onclick="sendMessage()">Plan Trip</button>
+    </div>
+  </div>
+
+  <script>
+    const messagesDiv = document.getElementById('messages');
+    const inputField = document.getElementById('input');
+    const sendButton = document.getElementById('send');
+    
+    const API_KEY = process.env.CLAUDE_API_KEY;
+
+    if (!API_KEY) {
+      showWelcome();
+    } else {
+      showWelcome();
+    }
+
+    function showWelcome() {
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'message assistant';
+      welcomeDiv.innerHTML = `
+        <div class="bubble">
+          <strong>Welcome to AI Travel Planner! 👋</strong><br><br>
+          I'm a team of four specialized agents working together to help you plan the perfect trip.<br><br>
+          <strong>My team:</strong><br>
+          🎯 Orchestrator - Coordinates the team<br>
+          🔍 Researcher - Finds facts<br>
+          📋 Planner - Creates itineraries<br>
+          ✍️ Writer - Polishes recommendations<br><br>
+          Tell me about your dream trip!
+          <div class="suggestion-buttons">
+            <button class="suggestion-btn" onclick="sendSuggestion('Plan a 7-day Japan trip in spring, budget $3000')">Japan Spring</button>
+            <button class="suggestion-btn" onclick="sendSuggestion('5-day Bali trip under $800')">Bali Budget</button>
+            <button class="suggestion-btn" onclick="sendSuggestion('Europe 10-day adventure')">Europe Tour</button>
+          </div>
+        </div>
+      `;
+      messagesDiv.appendChild(welcomeDiv);
+    }
+
+    function sendSuggestion(text) {
+      inputField.value = text;
+      sendMessage();
+    }
+
+    inputField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const userMessage = inputField.value.trim();
+      if (!userMessage) return;
+
+      inputField.value = '';
+      inputField.focus();
+
+      const userBubble = document.createElement('div');
+      userBubble.className = 'message user';
+      userBubble.innerHTML = `<div class="bubble">${escapeHtml(userMessage)}</div>`;
+      messagesDiv.appendChild(userBubble);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      const thinkingBubble = document.createElement('div');
+      thinkingBubble.className = 'message assistant';
+      thinkingBubble.innerHTML = `
+        <div class="bubble thinking">
+          <div class="agent-tag">🎯 Orchestrator</div> Coordinating...<br>
+          <div class="agent-tag">🔍 Researcher</div> Gathering...<br>
+          <div class="agent-tag">📋 Planner</div> Planning...<br>
+          <div class="agent-tag">✍️ Writer</div> Polishing...
+        </div>
+      `;
+      messagesDiv.appendChild(thinkingBubble);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      sendButton.disabled = true;
+      inputField.disabled = true;
+
+      try {
+        const apiKey = document.querySelector('[data-api-key]')?.getAttribute('data-api-key') || prompt('Enter your Claude API key:');
+        
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+          },
+          body: JSON.stringify({
+            model: 'claude-opus-4-6',
+            max_tokens: 2000,
+            system: `You are AI Travel Planner - a multi-agent travel planning system with 4 agents: Orchestrator, Researcher, Planner, and Writer. Be helpful, specific, and personalized. Include budgets and practical tips.`,
+            messages: [{ role: 'user', content: userMessage }]
+          })
+        });
+
+        const data = await response.json();
+        thinkingBubble.remove();
+
+        if (data.content && data.content[0]) {
+          const assistantMessage = data.content[0].text;
+          const assistantBubble = document.createElement('div');
+          assistantBubble.className = 'message assistant';
+          assistantBubble.innerHTML = `<div class="bubble">
+            <div class="agent-tag">🎯</div>
+            <div class="agent-tag">🔍</div>
+            <div class="agent-tag">📋</div>
+            <div class="agent-tag">✍️</div>
+            <div style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+              ${escapeHtml(assistantMessage).replace(/\n/g, '<br>')}
+            </div>
+          </div>`;
+          messagesDiv.appendChild(assistantBubble);
+        } else if (data.error) {
+          const errorBubble = document.createElement('div');
+          errorBubble.className = 'message assistant';
+          errorBubble.innerHTML = `<div class="bubble error-message"><strong>Error:</strong> ${escapeHtml(data.error.message)}</div>`;
+          messagesDiv.appendChild(errorBubble);
+        }
+      } catch (error) {
+        const errorBubble = document.createElement('div');
+        errorBubble.className = 'message assistant';
+        errorBubble.innerHTML = `<div class="bubble error-message"><strong>Error:</strong> ${escapeHtml(error.message)}</div>`;
+        messagesDiv.appendChild(errorBubble);
+      }
+
+      sendButton.disabled = false;
+      inputField.disabled = false;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, (m) => map[m]);
+    }
+  </script>
+</body>
+</html>
