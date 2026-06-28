@@ -5,288 +5,681 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>✈️ DSP AI Travel Planner</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
     }
+
+    /* DSP Header */
+    .dsp-header {
+      max-width: 900px;
+      margin: 0 auto 30px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .dsp-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dsp-logo:hover {
+      opacity: 0.8;
+    }
+
+    .dsp-nav {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .dsp-nav a {
+      color: #666;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .dsp-nav a:hover {
+      color: #667eea;
+    }
+
+    .dsp-cta {
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .dsp-cta:hover {
+      background: #764ba2;
+    }
+
+    /* Main Container */
     .container {
       max-width: 900px;
       margin: 0 auto;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 90vh;
     }
-    .header {
+
+    /* Hero Section */
+    .hero {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 2rem;
+      padding: 50px 40px;
       text-align: center;
     }
-    .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .header p { font-size: 1.1rem; opacity: 0.95; }
-    .status-bar {
+
+    .hero-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      opacity: 0.95;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .hero-tagline {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+
+    .badges {
       display: flex;
-      gap: 10px;
-      margin-top: 1rem;
-      justify-content: center;
       flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 0;
     }
+
     .badge {
-      background: rgba(255,255,255,0.2);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      background: #f8f9fa;
-    }
-    .message {
-      display: flex;
-      gap: 1rem;
-      animation: slideIn 0.3s ease-out;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .message.user { justify-content: flex-end; }
-    .bubble {
-      max-width: 75%;
-      padding: 1rem 1.25rem;
-      border-radius: 12px;
-      line-height: 1.6;
-      word-wrap: break-word;
-    }
-    .message.user .bubble {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
     }
-    .message.assistant .bubble {
-      background: white;
-      border: 1px solid #e0e0e0;
+
+    /* Agent Pipeline */
+    .pipeline {
+      background: #f8f9fb;
+      padding: 40px;
+      border-bottom: 1px solid #e0e3ff;
+    }
+
+    .pipeline-title {
+      font-size: 16px;
+      font-weight: 700;
       color: #333;
+      margin-bottom: 25px;
+      text-align: left;
     }
-    .agent-tag {
-      display: inline-block;
-      font-size: 0.85rem;
-      background: #f0f0f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-right: 6px;
+
+    .pipeline-flow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .pipeline-agent {
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .pipeline-agent-icon {
+      font-size: 28px;
       margin-bottom: 8px;
     }
-    .thinking { font-style: italic; color: #999; }
-    .input-area {
-      padding: 1.5rem;
-      border-top: 1px solid #e0e0e0;
-      background: white;
+
+    .pipeline-agent-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: #667eea;
+      margin-bottom: 4px;
+    }
+
+    .pipeline-agent-desc {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .pipeline-arrow {
+      color: #667eea;
+      font-weight: 700;
+      opacity: 0.5;
+      margin: 0 5px;
+    }
+
+    .vibe-coding {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .vibe-coding strong {
+      color: #667eea;
+    }
+
+    /* Main Content */
+    .content {
+      padding: 40px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .team-list {
+      background: #f8f9fb;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .team-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .team-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .team-icon {
+      font-size: 20px;
+      margin-right: 12px;
+      min-width: 24px;
+    }
+
+    .team-name {
+      font-weight: 700;
+      color: #667eea;
+      margin-right: 4px;
+    }
+
+    .team-desc {
+      color: #666;
+    }
+
+    .input-section {
       display: flex;
       gap: 10px;
+      margin-bottom: 30px;
     }
-    input {
+
+    .input-section input {
       flex: 1;
       padding: 12px 16px;
       border: 1px solid #ddd;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 14px;
+      font-family: inherit;
     }
-    input:focus {
+
+    .input-section input:focus {
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
-    button {
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    .btn {
+      padding: 12px 28px;
+      background: #667eea;
       color: white;
       border: none;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 14px;
+      transition: all 0.3s;
     }
-    button:hover:not(:disabled) {
+
+    .btn:hover {
+      background: #764ba2;
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error-message {
-      background: #f8d7da;
-      border: 1px solid #f5c6cb;
-      border-radius: 8px;
-      padding: 1rem;
-      color: #721c24;
+
+    .suggestions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
     }
-    .suggestion-buttons { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+
     .suggestion-btn {
-      background: #f0f0f0;
+      padding: 8px 16px;
+      background: #f0f4ff;
+      color: #667eea;
       border: 1px solid #ddd;
-      color: #333;
-      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
     }
+
     .suggestion-btn:hover {
       background: #667eea;
       color: white;
-      border-color: #667eea;
+    }
+
+    .output {
+      background: #f8f9fb;
+      padding: 24px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      min-height: 60px;
+      line-height: 1.7;
+      color: #444;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .agent-thinking {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f0f4ff;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #667eea;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      border-left: 4px solid #c33;
+    }
+
+    /* DSP Footer */
+    .dsp-footer {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .dsp-footer-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .dsp-footer-desc {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dsp-footer-cta {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .footer-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s;
+    }
+
+    .footer-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .dsp-footer-links {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 12px;
+      opacity: 0.85;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dsp-footer-links a {
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .dsp-footer-links a:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 30px 20px;
+      }
+
+      .hero-title {
+        font-size: 28px;
+      }
+
+      .content, .pipeline {
+        padding: 20px;
+      }
+
+      .dsp-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .pipeline-flow {
+        flex-direction: column;
+      }
+
+      .pipeline-arrow {
+        transform: rotate(90deg);
+        margin: 10px 0;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- DSP Header -->
+  <div class="dsp-header">
+    <a href="https://www.digitalservicesprogram.com" class="dsp-logo">
+      <span>D</span> DSP
+    </a>
+    <div class="dsp-nav">
+      <a href="https://www.digitalservicesprogram.com#learn">Learn</a>
+      <a href="https://www.digitalservicesprogram.com#modules">Modules</a>
+      <a href="https://www.digitalservicesprogram.com/blog">Blog</a>
+      <a href="https://wa.me/923118122222?text=Hi%20DSP%2C%20I%20want%20to%20join%20the%20bootcamp" class="dsp-cta">Join Bootcamp →</a>
+    </div>
+  </div>
+
+  <!-- Main Container -->
   <div class="container">
-    <div class="header">
-      <h1>✈️ AI Travel Planner</h1>
-      <p>Your personal multi-agent travel planning assistant</p>
-      <div class="status-bar">
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="hero-title">✈️ DSP AI Travel Planner</div>
+      <div class="hero-subtitle">Your personal multi-agent travel planning assistant</div>
+      <div class="hero-tagline">Built with Vibe Coding • No API key needed • Powered by DSP</div>
+      <div class="badges">
         <div class="badge">🟢 Online</div>
         <div class="badge">🔍 Research</div>
         <div class="badge">📋 Planning</div>
         <div class="badge">🧠 Memory</div>
-        <div class="badge">⚡ Multi-Agent</div>
+        <div class="badge">⚡ 4-Agent Fleet</div>
       </div>
     </div>
-    <div class="messages" id="messages"></div>
-    <div class="input-area">
-      <input type="text" id="input" placeholder="Describe your dream trip..." />
-      <button id="send" onclick="sendMessage()">Plan Trip</button>
+
+    <!-- Agent Pipeline -->
+    <div class="pipeline">
+      <div class="pipeline-title">Your Agentic Fleet</div>
+      <div class="pipeline-flow">
+        <div class="pipeline-agent">
+          <div class="pipeline-agent-icon">🎯</div>
+          <div class="pipeline-agent-name">Orchestrator</div>
+          <div class="pipeline-agent-desc">Coordinates the team</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-agent">
+          <div class="pipeline-agent-icon">🔍</div>
+          <div class="pipeline-agent-name">Researcher</div>
+          <div class="pipeline-agent-desc">Finds facts</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-agent">
+          <div class="pipeline-agent-icon">📋</div>
+          <div class="pipeline-agent-name">Planner</div>
+          <div class="pipeline-agent-desc">Creates itineraries</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-agent">
+          <div class="pipeline-agent-icon">✍️</div>
+          <div class="pipeline-agent-name">Writer</div>
+          <div class="pipeline-agent-desc">Polishes output</div>
+        </div>
+      </div>
+      <div class="vibe-coding">
+        <strong>What is Vibe Coding?</strong> You describe what you want; AI builds it. No Python required. This Travel Planner was built entirely through prompts—no traditional coding.
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="section-title">Tell me about your dream trip</div>
+
+      <div class="team-list">
+        <div class="team-item">
+          <div class="team-icon">🎯</div>
+          <div>
+            <span class="team-name">Orchestrator</span>
+            <span class="team-desc">– Coordinates the team</span>
+          </div>
+        </div>
+        <div class="team-item">
+          <div class="team-icon">🔍</div>
+          <div>
+            <span class="team-name">Researcher</span>
+            <span class="team-desc">– Finds facts about destinations</span>
+          </div>
+        </div>
+        <div class="team-item">
+          <div class="team-icon">📋</div>
+          <div>
+            <span class="team-name">Planner</span>
+            <span class="team-desc">– Creates detailed itineraries</span>
+          </div>
+        </div>
+        <div class="team-item">
+          <div class="team-icon">✍️</div>
+          <div>
+            <span class="team-name">Writer</span>
+            <span class="team-desc">– Polishes recommendations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Describe your dream trip..." 
+          onkeypress="if(event.key === 'Enter') planTrip()"
+        >
+        <button class="btn" onclick="planTrip()">Plan Trip</button>
+      </div>
+
+      <div class="suggestions">
+        <button class="suggestion-btn" onclick="document.getElementById('userInput').value='Plan a 5-day Bali trip under $1000'; planTrip()">Bali</button>
+        <button class="suggestion-btn" onclick="document.getElementById('userInput').value='Plan a 7-day Japan trip for food lovers'; planTrip()">Japan</button>
+        <button class="suggestion-btn" onclick="document.getElementById('userInput').value='Plan a 10-day Europe adventure on a budget'; planTrip()">Europe</button>
+      </div>
+
+      <div id="agentThinking" class="agent-thinking" style="display: none;">
+        <div class="spinner"></div>
+        <span id="thinkingText">Planning your trip...</span>
+      </div>
+
+      <div id="errorMessage" class="error" style="display: none;"></div>
+
+      <div id="output" class="output" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- DSP Footer -->
+  <div class="dsp-footer">
+    <div class="dsp-footer-title">Built with DSP</div>
+    <div class="dsp-footer-desc">
+      This Travel Planner was built using <strong>Vibe Coding</strong> — the same methodology taught in DSP's AI Agents Bootcamp. 
+      Learn to build real AI agents in just 15 days.
+    </div>
+    <div class="dsp-footer-cta">
+      <a href="https://wa.me/923118122222?text=Hi%20DSP%2C%20I%20want%20to%20join%20the%20bootcamp" class="footer-btn">Join Bootcamp →</a>
+      <a href="tel:+923118122222" class="footer-btn">Call +92 311 8122222</a>
+    </div>
+    <div class="dsp-footer-links">
+      <a href="https://www.digitalservicesprogram.com">Main Site</a>
+      <span>•</span>
+      <a href="https://www.digitalservicesprogram.com/blog">Blog</a>
+      <span>•</span>
+      <a href="https://www.digitalservicesprogram.com#faq">FAQ</a>
+      <span>•</span>
+      <span>© 2026 DSP · SECP Registered</span>
     </div>
   </div>
 
   <script>
-    const messagesDiv = document.getElementById('messages');
-    const inputField = document.getElementById('input');
-    const sendButton = document.getElementById('send');
+    async function planTrip() {
+      const userInput = document.getElementById('userInput').value.trim();
+      const output = document.getElementById('output');
+      const errorMsg = document.getElementById('errorMessage');
+      const thinking = document.getElementById('agentThinking');
 
-    showWelcome();
-
-    function showWelcome() {
-      const welcomeDiv = document.createElement('div');
-      welcomeDiv.className = 'message assistant';
-      welcomeDiv.innerHTML = `
-        <div class="bubble">
-          <strong>Welcome to AI Travel Planner! 👋</strong><br><br>
-          I'm a team of four specialized agents working together to help you plan the perfect trip.<br><br>
-          <strong>My team:</strong><br>
-          🎯 Orchestrator - Coordinates the team<br>
-          🔍 Researcher - Finds facts<br>
-          📋 Planner - Creates itineraries<br>
-          ✍️ Writer - Polishes recommendations<br><br>
-          Tell me about your dream trip! No API key needed!
-          <div class="suggestion-buttons">
-            <button class="suggestion-btn" onclick="sendSuggestion('Plan a 7-day Japan trip')">Japan</button>
-            <button class="suggestion-btn" onclick="sendSuggestion('5-day Bali budget trip')">Bali</button>
-            <button class="suggestion-btn" onclick="sendSuggestion('Europe adventure')">Europe</button>
-          </div>
-        </div>
-      `;
-      messagesDiv.appendChild(welcomeDiv);
-    }
-
-    function sendSuggestion(text) {
-      inputField.value = text;
-      sendMessage();
-    }
-
-    inputField.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
+      if (!userInput) {
+        errorMsg.textContent = 'Please describe your trip!';
+        errorMsg.style.display = 'block';
+        output.style.display = 'none';
+        return;
       }
-    });
 
-    async function sendMessage() {
-      const userMessage = inputField.value.trim();
-      if (!userMessage) return;
+      errorMsg.style.display = 'none';
+      output.style.display = 'none';
+      thinking.style.display = 'flex';
 
-      inputField.value = '';
-      inputField.focus();
+      const messages = [
+        { role: 'user', content: userInput }
+      ];
 
-      const userBubble = document.createElement('div');
-      userBubble.className = 'message user';
-      userBubble.innerHTML = `<div class="bubble">${escapeHtml(userMessage)}</div>`;
-      messagesDiv.appendChild(userBubble);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      const stages = [
+        { text: '🎯 Orchestrator: Coordinating the team...', duration: 1000 },
+        { text: '🔍 Researcher: Gathering destination facts...', duration: 1500 },
+        { text: '📋 Planner: Creating your itinerary...', duration: 1500 },
+        { text: '✍️ Writer: Polishing your travel plan...', duration: 1000 }
+      ];
 
-      const thinkingBubble = document.createElement('div');
-      thinkingBubble.className = 'message assistant';
-      thinkingBubble.innerHTML = `
-        <div class="bubble thinking">
-          <div class="agent-tag">🎯</div> Orchestrating...<br>
-          <div class="agent-tag">🔍</div> Researching...<br>
-          <div class="agent-tag">📋</div> Planning...<br>
-          <div class="agent-tag">✍️</div> Writing...
-        </div>
-      `;
-      messagesDiv.appendChild(thinkingBubble);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-      sendButton.disabled = true;
-      inputField.disabled = true;
+      let stageIndex = 0;
+      const stageInterval = setInterval(() => {
+        if (stageIndex < stages.length) {
+          document.getElementById('thinkingText').textContent = stages[stageIndex].text;
+          stageIndex++;
+        }
+      }, 1000);
 
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: userMessage })
+          body: JSON.stringify({ message: userInput })
         });
 
-        const data = await response.json();
-        thinkingBubble.remove();
+        clearInterval(stageInterval);
 
-        if (response.ok && data.message) {
-          const assistantBubble = document.createElement('div');
-          assistantBubble.className = 'message assistant';
-          assistantBubble.innerHTML = `<div class="bubble">
-            <div style="margin-bottom: 1rem;">
-              <div class="agent-tag">🎯</div>
-              <div class="agent-tag">🔍</div>
-              <div class="agent-tag">📋</div>
-              <div class="agent-tag">✍️</div>
-            </div>
-            ${escapeHtml(data.message).replace(/\n/g, '<br>')}
-          </div>`;
-          messagesDiv.appendChild(assistantBubble);
-        } else {
-          const errorBubble = document.createElement('div');
-          errorBubble.className = 'message assistant';
-          errorBubble.innerHTML = `<div class="bubble error-message">
-            <strong>Error:</strong> ${escapeHtml(data.error || 'Failed to get response')}
-          </div>`;
-          messagesDiv.appendChild(errorBubble);
+        if (!response.ok) {
+          throw new Error('Failed to plan trip');
         }
+
+        const data = await response.json();
+        thinking.style.display = 'none';
+        output.textContent = data.message;
+        output.style.display = 'block';
       } catch (error) {
-        const errorBubble = document.createElement('div');
-        errorBubble.className = 'message assistant';
-        errorBubble.innerHTML = `<div class="bubble error-message">
-          <strong>Error:</strong> ${escapeHtml(error.message)}
-        </div>`;
-        messagesDiv.appendChild(errorBubble);
+        clearInterval(stageInterval);
+        thinking.style.display = 'none';
+        errorMsg.textContent = `Error: ${error.message}`;
+        errorMsg.style.display = 'block';
       }
-
-      sendButton.disabled = false;
-      inputField.disabled = false;
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function escapeHtml(text) {
-      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-      return text.replace(/[&<>"']/g, (m) => map[m]);
     }
   </script>
 </body>
